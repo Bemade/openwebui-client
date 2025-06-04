@@ -13,6 +13,10 @@ from openwebui_client.completions import OpenWebUICompletions
 def mock_client():
     """Create a mock client for testing."""
     client = MagicMock()
+    # Set up base_url and api_key to be proper strings
+    client.base_url = "https://test.com"
+    client.api_key = "test_api_key"
+    
     # Create a proper ChatCompletion with dictionary structure instead of MagicMock objects
     client.post.return_value = ChatCompletion(
         id="test-id",
@@ -38,12 +42,40 @@ def mock_client():
     return client
 
 
-def test_create_with_files(mock_client):
+@patch('requests.post')
+def test_create_with_files(mock_post, mock_client):
     """Test create method with files parameter."""
+    # Set up the mock response
+    mock_response = MagicMock()
+    mock_response.json.return_value = {
+        "id": "test-id",
+        "choices": [{
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+                "content": "Test response",
+                "role": "assistant"
+            }
+        }],
+        "created": 1619990475,
+        "model": "gpt-4",
+        "object": "chat.completion",
+        "usage": {
+            "completion_tokens": 10,
+            "prompt_tokens": 20,
+            "total_tokens": 30,
+        },
+    }
+    mock_response.status_code = 200
+    mock_post.return_value = mock_response
+    
+    # Initialize completions
     completions = OpenWebUICompletions(client=mock_client)
 
-    # Mock file identifier list
-    files = [MagicMock()]
+    # Create a proper mock file
+    mock_file = MagicMock(spec=FileObject)
+    mock_file.id = "file-123"
+    files = [mock_file]
 
     # Call create with files
     response = completions.create(
@@ -52,17 +84,20 @@ def test_create_with_files(mock_client):
         files=files,
     )
 
-    # Check that the client's post method was called with the right parameters
-    mock_client.post.assert_called_once()
-    args, kwargs = mock_client.post.call_args
-
-    # Check endpoint (in the path parameter)
-    assert kwargs["path"] == "/api/chat/completions"
-
-    # Check files parameter
-    assert kwargs["body"]["files"] == files
-
-    # Check that we got a response
+    # Check that requests.post was called
+    mock_post.assert_called_once()
+    
+    # Check that the post was called with the right URL and data format
+    args, kwargs = mock_post.call_args
+    assert args[0] == "https://test.com/chat/completions"
+    
+    # Verify files were properly formatted in the JSON payload
+    assert 'files' in kwargs['json']
+    assert kwargs['json']['files'][0]['id'] == "file-123"
+    assert kwargs['json']['files'][0]['type'] == "file"
+    
+    # Verify the response was properly constructed
+    assert isinstance(response, ChatCompletion)
     assert response.choices[0].message.content == "Test response"
 
 

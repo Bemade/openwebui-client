@@ -9,6 +9,9 @@ import pytest
 from openwebui_client import OpenWebUIClient
 
 from pathlib import Path
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 # Skip all tests if no API key or base URL is provided
 pytestmark = pytest.mark.skipif(
@@ -29,9 +32,8 @@ def client():
 
 
 @pytest.fixture
-def file_content():
-    with open(Path(__file__).parent / "data" / "Bemade Header.pdf", "rb") as f:
-        return f.read()
+def file_path():
+    return Path(__file__).parent / "data" / "Les_Processus_Cl_s.pdf"
 
 
 def test_chat_completion(client):
@@ -52,9 +54,9 @@ def test_chat_completion(client):
     assert response.choices[0].message.role == "assistant"
 
 
-def test_chat_completion_with_file(client, file_content):
+def test_chat_completion_with_file(client: OpenWebUIClient, file_path: Path):
     """Test chat completions with a file attachment."""
-    file = client.files.create(file=file_content)
+    file = client.files.create(file=file_path)
 
     assert file.id is not None
 
@@ -65,7 +67,7 @@ def test_chat_completion_with_file(client, file_content):
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": "What's in the attached file?"},
         ],
-        files=[file.id],
+        files=[file],
         max_tokens=20,  # Limit the response size for test efficiency
     )
 
@@ -81,38 +83,32 @@ def test_chat_completion_with_file(client, file_content):
     )
 
 
-@pytest.mark.xfail(
-    reason="File uploads might not be supported on all OpenWebUI instances"
-)
-def test_file_upload(client, file_content):
+def test_file_upload(client: OpenWebUIClient, file_path: Path):
     """Test file uploads."""
     try:
         file_obj = client.files.create(
-            file=file_content,
+            file=file_path,
             file_metadata={"purpose": "assistants"},
         )
 
         # Check that we got a file object back
         assert file_obj.id is not None
-        assert file_obj.bytes == len(file_content)
+        assert file_obj.bytes == len(file_path.read_bytes())
 
     except Exception as e:
         pytest.xfail(f"File upload failed: {str(e)}")
 
 
-@pytest.mark.xfail(reason="Multiple file uploads might not be supported")
-def test_multiple_file_upload(client):
+def test_multiple_file_upload(client: OpenWebUIClient, file_path: Path):
     """Test multiple file uploads."""
     # Create small test files
-    file_content1 = b"This is the first test file for OpenWebUI."
-    file_content2 = b"This is the second test file for OpenWebUI."
 
     # Upload the files
     try:
         file_objects = client.files.create(
             files=[
-                (file_content1, {"purpose": "assistants"}),
-                (file_content2, {"purpose": "assistants"}),
+                (file_path, {"purpose": "assistants"}),
+                (file_path, {"purpose": "assistants"}),
             ]
         )
 

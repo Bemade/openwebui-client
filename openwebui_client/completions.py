@@ -154,14 +154,77 @@ class OpenWebUICompletions(Completions):
                 if k != "self" and (k is not None or k != NOT_GIVEN) and "__" not in k
             }
 
-            # Make the request using the OpenAI client
-            # OpenWebUI uses the /api/chat/completions endpoint
-            response = self._client.post(
-                path="/api/chat/completions",
-                body=request_data,
-                options={"headers": {"Content-Type": "multipart/form-data"}},
-                cast_to=ChatCompletion,
-            )
+            # Make the request using direct HTTP request
+            # OpenWebUI requires files as a parameter in the form data
+            import json
+            import requests
+
+            # Extract the base URL from the client
+            base_url = str(self._client.base_url).rstrip('/')
+
+            # Construct the full URL - try the api prefix again
+            url = f"{base_url}/chat/completions"
+
+            # Set up authentication headers and content type for JSON
+            headers = {
+                "Authorization": f"Bearer {self._client.api_key}",
+                "Content-Type": "application/json"
+            }
+
+            # Let's try another approach - create a JSON payload with all parameters
+            # Then add that payload as 'json' parameter in form data
+            payload = {
+                "model": model,
+                "messages": [{
+                    "role": m["role"],
+                    "content": m["content"]
+                } for m in messages],
+                "max_tokens": max_tokens if max_tokens is not NOT_GIVEN else None
+            }
+
+            # Add any additional OpenAI parameters to the payload
+            for key, value in request_data.items():
+                if key not in ["self", "files", "messages", "model", "max_tokens"] and value is not NOT_GIVEN and value is not None:
+                    payload[key] = value
+
+            # Add file references if provided
+            # Try sending file IDs in the format OpenWebUI expects
+            if files:
+                # Based on error messages, let's try a different format
+                # Check OpenWebUI's API source to see expected format
+                file_ids = [f.id for f in files]
+
+                # Format files exactly as shown in OpenWebUI's API docs
+                formatted_files = [{"type": "file", "id": f.id} for f in files]
+                payload["files"] = formatted_files
+
+                # Log additional debug info about the file objects
+                for i, file in enumerate(files):
+                    _logger.debug(f"File {i} details: id={file.id}, filename={getattr(file, 'filename', None)}")
+
+            # No need for form data structure, send the payload directly as JSON
+
+            # Print detailed request information
+            _logger.debug(f"CHAT API - URL: {url}")
+            _logger.debug(f"CHAT API - Headers: {headers}")
+            _logger.debug(f"CHAT API - Payload: {payload}")
+
+            # Make the HTTP request with JSON payload
+            http_response = requests.post(url, headers=headers, json=payload)
+
+            # Print response details
+            _logger.debug(f"CHAT API - Response Status: {http_response.status_code}")
+            _logger.debug(f"CHAT API - Response Headers: {dict(http_response.headers)}")
+            _logger.debug(f"CHAT API - Response Body: {http_response.text[:500]}..." if len(http_response.text) > 500 else f"CHAT API - Response Body: {http_response.text}")
+
+            # Raise an exception for any HTTP error
+            http_response.raise_for_status()
+
+            # Parse the JSON response
+            response_data = http_response.json()
+
+            # Convert the response to a ChatCompletion object
+            response = ChatCompletion(**response_data)
             return response
         else:
             # Without files, delegate to the parent implementation
