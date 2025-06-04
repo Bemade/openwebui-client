@@ -7,7 +7,7 @@ write_to = "openwebui_client/_version.py"
 
 [project]
 name = "openwebui-client"
-version = "0.1.1"
+version = "0.1.2"
 description = "A client library for the OpenWebUI API, compatible with OpenAI Python SDK"
 authors = [
     {name = "Mark Durepos", email = "marc@bemade.org"}
