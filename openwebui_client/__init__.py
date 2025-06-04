@@ -10,16 +10,6 @@ from typing import Optional
 
 from .client import OpenWebUIClient
 
-# Create a default client instance for ease of use
-api_key = os.environ.get("OPENWEBUI_API_KEY", os.environ.get("OPENAI_API_KEY", ""))
-base_url = os.environ.get("OPENWEBUI_API_BASE", "http://localhost:5000/api")
-
-client = OpenWebUIClient(
-    api_key=api_key,
-    base_url=base_url,
-    default_model="gpt-4",  # Default model
-)
-
 # Export key classes and functions
 __all__ = [
     "OpenWebUIClient",

@@ -15,8 +15,8 @@ def test_client_initialization():
     assert client.api_key == "test-key"
     # Base URL should not have /v1 appended automatically
     assert client.base_url == "http://test-url.com"
-    assert isinstance(client.client.chat.completions, OpenWebUICompletions)
-    assert isinstance(client.client.files, OpenWebUIFiles)
+    assert isinstance(client.chat.completions, OpenWebUICompletions)
+    assert isinstance(client.files, OpenWebUIFiles)
 
 
 def test_base_url_handling():
@@ -30,15 +30,13 @@ def test_base_url_handling():
     assert client2.base_url == "http://test-url.com"
 
 
-@patch("openwebui_client.client.OpenAI")
-def test_chat_property(mock_openai):
+def test_chat_property():
     """Test that the chat property works correctly."""
-    mock_client = MagicMock()
-    mock_openai.return_value = mock_client
-
     client = OpenWebUIClient(api_key="test-key")
 
     # Access the chat property
     chat = client.chat
-
-    assert chat is mock_client.chat
+    
+    # Verify it has the completions attribute with our custom implementation
+    assert hasattr(chat, "completions")
+    assert isinstance(chat.completions, OpenWebUICompletions)

@@ -3,12 +3,15 @@
 import logging
 import httpx
 from typing import Any, Dict, Iterable, List, Literal, Optional, Sequence, Union
-
+from openai.types.file_object import FileObject
 from openai._types import Body, Headers, NotGiven, Query, NOT_GIVEN
 from openai.resources.chat import Completions
-from openai.resources.chat.completions import ChatModel
-from openai.resources.chat.completions import completion_create_params
-from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
+from openai.types.shared.chat_model import ChatModel
+from openai.types.chat import (
+    ChatCompletion,
+    ChatCompletionMessageParam,
+    completion_create_params,
+)
 from openai.types.chat.completion_create_params import Metadata, ReasoningEffort
 from openai.types.chat.completion_create_params import (
     ChatCompletionToolChoiceOptionParam,
@@ -26,13 +29,22 @@ _logger = logging.getLogger(__name__)
 class OpenWebUICompletions(Completions):
     """Extended Completions class that supports the 'files' parameter for OpenWebUI."""
 
+    def __init__(self, client):
+        """Initialize the OpenWebUI completions handler.
+
+        Args:
+            client: The OpenAI client to use for requests
+        """
+        # Pass the full OpenAI client, not just its internal client
+        super().__init__(client=client)
+
     def create(
         self,
         *,
         messages: Iterable[ChatCompletionMessageParam],
         model: Union[str, ChatModel],
         # OpenWebUI specific parameter
-        files: Optional[Iterable[bytes]] = None,
+        files: Optional[Iterable[FileObject]] = None,
         # Standard OpenAI parameters
         audio: Optional[ChatCompletionAudioParam] | NotGiven = NOT_GIVEN,
         frequency_penalty: Optional[float] | NotGiven = NOT_GIVEN,
@@ -128,39 +140,35 @@ class OpenWebUICompletions(Completions):
             A ChatCompletion object containing the model's response.
         """
         # Extract and handle the 'files' parameter specially
-        # (all other parameters will pass through to super().create)
-
         # Handle special case for files parameter
         if files:
             _logger.debug(f"Including {len(files)} files in chat completion request")
 
-            # Get all local variables (parameters) as a dictionary
-            all_params = locals()
+            # When files are provided, we need to handle the request manually
+            # because the OpenAI API doesn't support this parameter
 
-            # Create a clean dictionary of parameters for the API call, removing self
+            # Create a dictionary of parameters for the API call, excluding special parameters
             request_data = {
                 k: v
-                for k, v in all_params.items()
-                if k != "self" and v is not NOT_GIVEN and v is not None
+                for k, v in locals().items()
+                if k != "self" and (k is not None or k != NOT_GIVEN) and "__" not in k
             }
 
-
-            # Make the request using the underlying client
-            # OpenWebUI uses /openai/chat/completions endpoint without the /v1 prefix
+            # Make the request using the OpenAI client
+            # OpenWebUI uses the /api/chat/completions endpoint
             response = self._client.post(
-                "/openai/chat/completions",
-                **request_data,
+                path="/api/chat/completions",
+                body=request_data,
+                options={"headers": {"Content-Type": "multipart/form-data"}},
                 cast_to=ChatCompletion,
-                request_timeout=request_data.get("timeout"),
             )
             return response
         else:
-            # If no files, just pass all parameters to the parent implementation
-            # Collect parameters from locals and pass them to super().create
-            all_params = locals()
-            kwargs = {k: v for k, v in all_params.items() if k != "self"}
-
-            # No need to filter out None or NOT_GIVEN values,
-            # as the OpenAI client handles these correctly
-
-            return super().create(**kwargs)
+            # Without files, delegate to the parent implementation
+            # Just don't pass the 'files' parameter which is None anyway
+            standard_kwargs = {
+                k: v
+                for k, v in locals().items()
+                if k not in ["self", "files"] and "__" not in k
+            }
+            return super().create(**standard_kwargs)
