@@ -11,6 +11,8 @@ from openwebui_client import OpenWebUIClient
 from pathlib import Path
 import logging
 
+from openai.types.chat.chat_completion import ChatCompletion
+
 logging.basicConfig(level=logging.DEBUG)
 
 # Skip all tests if no API key or base URL is provided
@@ -19,7 +21,7 @@ pytestmark = pytest.mark.skipif(
     reason="OPENWEBUI_API_KEY and OPENWEBUI_API_BASE environment variables are required for integration tests",
 )
 
-model = os.getenv("OPENWEBUI_DEFAULT_MODEL") or "POP.qwen3:30b"
+model = os.getenv("OPENWEBUI_DEFAULT_MODEL") or "anthropic.claude-3-7-sonnet-latest"
 
 
 @pytest.fixture
@@ -27,7 +29,7 @@ def client():
     """Create a client connected to a real OpenWebUI instance."""
     return OpenWebUIClient(
         api_key=os.environ.get("OPENWEBUI_API_KEY"),
-        base_url=os.environ.get("OPENWEBUI_API_BASE"),
+        base_url=os.environ.get("OPENWEBUI_API_BASE", ""),
     )
 
 
@@ -56,7 +58,7 @@ def test_chat_completion(client):
 
 def test_chat_completion_with_file(client: OpenWebUIClient, file_path: Path):
     """Test chat completions with a file attachment."""
-    file = client.files.create(file=file_path)
+    file = client.files.from_path(file=file_path)
 
     assert file.id is not None
 
@@ -72,6 +74,7 @@ def test_chat_completion_with_file(client: OpenWebUIClient, file_path: Path):
     )
 
     # Verify we got a response
+    assert isinstance(response, ChatCompletion)
     assert response.id is not None
     assert len(response.choices) > 0
     assert response.choices[0].message.content is not None
@@ -86,7 +89,7 @@ def test_chat_completion_with_file(client: OpenWebUIClient, file_path: Path):
 def test_file_upload(client: OpenWebUIClient, file_path: Path):
     """Test file uploads."""
     try:
-        file_obj = client.files.create(
+        file_obj = client.files.from_path(
             file=file_path,
             file_metadata={"purpose": "assistants"},
         )
@@ -105,7 +108,7 @@ def test_multiple_file_upload(client: OpenWebUIClient, file_path: Path):
 
     # Upload the files
     try:
-        file_objects = client.files.create(
+        file_objects = client.files.from_paths(
             files=[
                 (file_path, {"purpose": "assistants"}),
                 (file_path, {"purpose": "assistants"}),

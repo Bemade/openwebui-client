@@ -1,17 +1,30 @@
 """OpenWebUI client for interacting with the OpenWebUI API."""
 
 import logging
-from typing import Any, Dict, Iterable, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 from openai import OpenAI
-from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
+from openai._streaming import Stream
+from openai.types.chat.chat_completion import ChatCompletion
+from openai.types.chat.chat_completion_chunk import ChatCompletionChunk
 from openai.types.chat.completion_create_params import ResponseFormat
-from openai.types import FileObject
+from openai.resources.chat import Chat as OpenAIChat
+from openai._compat import cached_property
+
+from httpx import Response
 
 from .completions import OpenWebUICompletions
 from .files import OpenWebUIFiles
 
 _logger = logging.getLogger(__name__)
+
+
+class OpenWebUIChat(OpenAIChat):
+    """Custom Chat class that uses OpenWebUICompletions."""
+
+    @cached_property
+    def completions(self):
+        return OpenWebUICompletions(self._client)
 
 
 class OpenWebUIClient(OpenAI):
@@ -44,23 +57,28 @@ class OpenWebUIClient(OpenAI):
         # Initialize the parent OpenAI class
         super().__init__(api_key=api_key, base_url=base_url, **kwargs)
 
-        # Set up OpenWebUI-specific completions and files
-        self.chat.completions = OpenWebUICompletions(self)
-        self.files = OpenWebUIFiles(self)
-
         # Store additional configuration
         self.default_model = default_model
         self.base_url = base_url
 
+    @cached_property
+    def chat(self):
+        """Return the custom OpenWebUIChat instance."""
+        return OpenWebUIChat(self)
+
+    @cached_property
+    def files(self):
+        return OpenWebUIFiles(self)
+
     def chat_completion_with_files(
         self,
         messages: List[Dict[str, Any]],
-        model: str = None,
+        model: Optional[str] = None,
         files: Optional[List[bytes]] = None,
         temperature: Optional[float] = None,
         response_format: Optional[ResponseFormat] = None,
         **kwargs: Any,
-    ) -> ChatCompletion:
+    ) -> ChatCompletion | Stream[ChatCompletionChunk] | Response:
         """Create a chat completion with optional file attachments.
 
         Args:
@@ -97,11 +115,11 @@ class OpenWebUIClient(OpenAI):
 
             # Send as multipart/form-data
             headers = {"Content-Type": "multipart/form-data"}
-            response = self.client.post(
+            response = self._client.post(
                 endpoint, json=params, files=file_data, headers=headers
             )
         else:
             # Use standard completions endpoint
-            response = self.client.chat.completions.create(**params)
+            response = self.chat.completions.create(**params)
 
         return response

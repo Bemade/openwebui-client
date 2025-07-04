@@ -15,7 +15,7 @@ pytestmark = pytest.mark.skipif(
 @pytest.fixture
 def api_base():
     """Get the API base URL from environment variables."""
-    return os.environ.get("OPENWEBUI_API_BASE").rstrip("/")
+    return os.environ.get("OPENWEBUI_API_BASE", "").rstrip("/")
 
 
 @pytest.fixture
@@ -34,39 +34,42 @@ def file_content():
 def test_direct_file_upload(api_base, api_key, file_content):
     """Test direct file upload to the /v1/files endpoint."""
     url = f"{api_base}/v1/files/"  # Note the trailing slash
-    
+
     headers = {
         "Authorization": f"Bearer {api_key}",
     }
-    
+
     files = {
         "file": ("test.pdf", file_content, "application/pdf"),
     }
-    
+
     data = {
         "purpose": "assistants",
         "process": "true",  # This parameter is required by OpenWebUI
     }
-    
+
     # Print the request details for debugging
     print("\n===== REQUEST DETAILS =====")
     print(f"URL: {url}")
     print(f"Headers: {headers}")
     print(f"Data: {data}")
     print(f"Files: {[(k, (v[0], '...content...', v[2])) for k, v in files.items()]}")
-    
+
     # Make the direct request
     response = requests.post(url, headers=headers, files=files, data=data)
-    
+
     # Print the full response for debugging
     print("\n===== RESPONSE DETAILS =====")
     print(f"Status Code: {response.status_code}")
     print(f"Response Headers: {response.headers}")
     print(f"Response Body: {response.text}")
-    
+
     # Assert the response status code
-    assert response.status_code in [200, 201], f"Expected 200/201, got {response.status_code}: {response.text}"
-    
+    assert response.status_code in [
+        200,
+        201,
+    ], f"Expected 200/201, got {response.status_code}: {response.text}"
+
     # If successful, assert that we got a file object back
     if response.status_code in [200, 201]:
         file_obj = response.json()

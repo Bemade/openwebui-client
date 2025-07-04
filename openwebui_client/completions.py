@@ -2,26 +2,40 @@
 
 import logging
 import httpx
-from typing import Any, Dict, Iterable, List, Literal, Optional, Sequence, Union
+from typing import (
+    Collection,
+    Dict,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    Union,
+)
 from openai.types.file_object import FileObject
 from openai._types import Body, Headers, NotGiven, Query, NOT_GIVEN
+from openai._streaming import Stream
 from openai.resources.chat import Completions
 from openai.types.shared.chat_model import ChatModel
 from openai.types.chat import (
     ChatCompletion,
     ChatCompletionMessageParam,
     completion_create_params,
+    ChatCompletionChunk,
 )
-from openai.types.chat.completion_create_params import Metadata, ReasoningEffort
-from openai.types.chat.completion_create_params import (
+from openai.types.shared_params.metadata import Metadata
+from openai.types.shared.reasoning_effort import ReasoningEffort
+from openai.types.chat.chat_completion_tool_choice_option_param import (
     ChatCompletionToolChoiceOptionParam,
-    ChatCompletionToolParam,
 )
-from openai.types.chat.completion_create_params import (
-    ChatCompletionAudioParam,
+from openai.types.chat.chat_completion_tool_param import ChatCompletionToolParam
+from openai.types.chat.chat_completion_audio_param import ChatCompletionAudioParam
+from openai.types.chat.chat_completion_prediction_content_param import (
     ChatCompletionPredictionContentParam,
+)
+from openai.types.chat.chat_completion_stream_options_param import (
     ChatCompletionStreamOptionsParam,
 )
+from openai._utils import required_args
 
 _logger = logging.getLogger(__name__)
 
@@ -38,15 +52,14 @@ class OpenWebUICompletions(Completions):
         # Pass the full OpenAI client, not just its internal client
         super().__init__(client=client)
 
-    def create(
+    @required_args(["messages", "model"], ["messages", "model", "stream"])
+    def create(  # pyright: ignore[reportIncompatibleMethodOverride]
         self,
         *,
         messages: Iterable[ChatCompletionMessageParam],
         model: Union[str, ChatModel],
-        # OpenWebUI specific parameter
-        files: Optional[Iterable[FileObject]] = None,
-        # Standard OpenAI parameters
         audio: Optional[ChatCompletionAudioParam] | NotGiven = NOT_GIVEN,
+        files: Optional[Collection[FileObject]] | NotGiven = NOT_GIVEN,
         frequency_penalty: Optional[float] | NotGiven = NOT_GIVEN,
         function_call: completion_create_params.FunctionCall | NotGiven = NOT_GIVEN,
         functions: Iterable[completion_create_params.Function] | NotGiven = NOT_GIVEN,
@@ -70,7 +83,7 @@ class OpenWebUICompletions(Completions):
         ) = NOT_GIVEN,
         stop: Union[Optional[str], List[str], None] | NotGiven = NOT_GIVEN,
         store: Optional[bool] | NotGiven = NOT_GIVEN,
-        stream: Optional[Literal[False]] | NotGiven = NOT_GIVEN,
+        stream: Optional[Literal[False]] | Literal[True] | NotGiven = NOT_GIVEN,
         stream_options: (
             Optional[ChatCompletionStreamOptionsParam] | NotGiven
         ) = NOT_GIVEN,
@@ -83,12 +96,13 @@ class OpenWebUICompletions(Completions):
         web_search_options: (
             completion_create_params.WebSearchOptions | NotGiven
         ) = NOT_GIVEN,
-        # Extra parameters
+        # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
+        # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> ChatCompletion:
+    ) -> ChatCompletion | Stream[ChatCompletionChunk]:
         """Create a chat completion with support for the 'files' parameter.
 
         This overrides the standard create method to handle the 'files' parameter
@@ -160,7 +174,7 @@ class OpenWebUICompletions(Completions):
             import requests
 
             # Extract the base URL from the client
-            base_url = str(self._client.base_url).rstrip('/')
+            base_url = str(self._client.base_url).rstrip("/")
 
             # Construct the full URL - try the api prefix again
             url = f"{base_url}/chat/completions"
@@ -168,23 +182,26 @@ class OpenWebUICompletions(Completions):
             # Set up authentication headers and content type for JSON
             headers = {
                 "Authorization": f"Bearer {self._client.api_key}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             }
 
             # Let's try another approach - create a JSON payload with all parameters
             # Then add that payload as 'json' parameter in form data
             payload = {
                 "model": model,
-                "messages": [{
-                    "role": m["role"],
-                    "content": m["content"]
-                } for m in messages],
-                "max_tokens": max_tokens if max_tokens is not NOT_GIVEN else None
+                "messages": [
+                    {"role": m["role"], "content": m.get("content")} for m in messages
+                ],
+                "max_tokens": max_tokens if max_tokens is not NOT_GIVEN else None,
             }
 
             # Add any additional OpenAI parameters to the payload
             for key, value in request_data.items():
-                if key not in ["self", "files", "messages", "model", "max_tokens"] and value is not NOT_GIVEN and value is not None:
+                if (
+                    key not in ["self", "files", "messages", "model", "max_tokens"]
+                    and value is not NOT_GIVEN
+                    and value is not None
+                ):
                     payload[key] = value
 
             # Add file references if provided
@@ -200,7 +217,9 @@ class OpenWebUICompletions(Completions):
 
                 # Log additional debug info about the file objects
                 for i, file in enumerate(files):
-                    _logger.debug(f"File {i} details: id={file.id}, filename={getattr(file, 'filename', None)}")
+                    _logger.debug(
+                        f"File {i} details: id={file.id}, filename={getattr(file, 'filename', None)}"
+                    )
 
             # No need for form data structure, send the payload directly as JSON
 
@@ -215,7 +234,11 @@ class OpenWebUICompletions(Completions):
             # Print response details
             _logger.debug(f"CHAT API - Response Status: {http_response.status_code}")
             _logger.debug(f"CHAT API - Response Headers: {dict(http_response.headers)}")
-            _logger.debug(f"CHAT API - Response Body: {http_response.text[:500]}..." if len(http_response.text) > 500 else f"CHAT API - Response Body: {http_response.text}")
+            _logger.debug(
+                f"CHAT API - Response Body: {http_response.text[:500]}..."
+                if len(http_response.text) > 500
+                else f"CHAT API - Response Body: {http_response.text}"
+            )
 
             # Raise an exception for any HTTP error
             http_response.raise_for_status()
