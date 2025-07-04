@@ -36,8 +36,18 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 
 # Upload a file to OpenWebUI
+uploaded_file = client.files.from_path(file)
+
+# Upload multiple files to OpenWebUI
 with open("document.pdf", "rb") as file:
-    uploaded_file = client.files.upload(file=file, purpose="assistant")
+    uploaded_files = client.files.from_paths(
+        files=[
+            (file1, None),
+            (file2, {"xMetaField": "xMetaValue"})
+        ]
+    )
+
+uploaded_files.append(uploaded_file)
 
 # Use file with chat completion
 response = client.chat.completions.create(
@@ -46,7 +56,7 @@ response = client.chat.completions.create(
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": "Summarize this document for me."}
     ],
-    file_ids=[uploaded_file.id]
+    files=uploaded_files
 )
 ```
 
