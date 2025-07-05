@@ -1,0 +1,316 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>openwebui_client.files &mdash; openwebui-client 0.2.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=37f418d5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            openwebui-client
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../installation.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../installation.html#installation-from-pypi">Installation from PyPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../installation.html#installation-from-source">Installation from Source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../installation.html#development-installation">Development Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../usage.html#configuration">Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../usage.html#environment-variables">Environment Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage.html#direct-configuration">Direct Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage.html#basic-usage">Basic Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../usage.html#chat-completions">Chat Completions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage.html#chat-completions-with-files">Chat Completions with Files</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage.html#file-management">File Management</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../usage.html#upload-a-single-file">Upload a Single File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage.html#upload-multiple-files">Upload Multiple Files</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#basic-chat-completion">Basic Chat Completion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#chat-completion-with-files">Chat Completion with Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#using-function-calling-tools">Using Function Calling / Tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../examples.html#direct-tool-usage">Direct Tool Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples.html#using-the-tool-registry">Using the Tool Registry</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples.html#file-upload-and-management">File Upload and Management</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#module-openwebui_client.client">Client</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#openwebui_client.client.OpenWebUIChat"><code class="docutils literal notranslate"><span class="pre">OpenWebUIChat</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api.html#openwebui_client.client.OpenWebUIChat.completions"><code class="docutils literal notranslate"><span class="pre">OpenWebUIChat.completions()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#openwebui_client.client.OpenWebUIClient"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api.html#openwebui_client.client.OpenWebUIClient.__init__"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api.html#openwebui_client.client.OpenWebUIClient.chat"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient.chat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api.html#openwebui_client.client.OpenWebUIClient.files"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient.files()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api.html#openwebui_client.client.OpenWebUIClient.chat_with_tools"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient.chat_with_tools()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#chat-completions">Chat Completions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#openwebui_client.completions.OpenWebUICompletions"><code class="docutils literal notranslate"><span class="pre">OpenWebUICompletions</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api.html#openwebui_client.completions.OpenWebUICompletions.__init__"><code class="docutils literal notranslate"><span class="pre">OpenWebUICompletions.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api.html#openwebui_client.completions.OpenWebUICompletions.create"><code class="docutils literal notranslate"><span class="pre">OpenWebUICompletions.create()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#module-openwebui_client.files">Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#openwebui_client.files.OpenWebUIFiles"><code class="docutils literal notranslate"><span class="pre">OpenWebUIFiles</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api.html#openwebui_client.files.OpenWebUIFiles.from_paths"><code class="docutils literal notranslate"><span class="pre">OpenWebUIFiles.from_paths()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api.html#openwebui_client.files.OpenWebUIFiles.from_path"><code class="docutils literal notranslate"><span class="pre">OpenWebUIFiles.from_path()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#core-module">Core Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#openwebui_client.OpenWebUIClient"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api.html#openwebui_client.OpenWebUIClient.__init__"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api.html#openwebui_client.OpenWebUIClient.chat"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient.chat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api.html#openwebui_client.OpenWebUIClient.chat_with_tools"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient.chat_with_tools()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api.html#openwebui_client.OpenWebUIClient.files"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient.files()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing.html#development-setup">Development Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing.html#code-style">Code Style</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing.html#running-tests">Running Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing.html#building-documentation">Building Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing.html#submitting-changes">Submitting Changes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#changelog">Changelog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../changelog.html#id1">[0.1.0] - 2025-05-27</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../changelog.html#added">Added</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">openwebui-client</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">openwebui_client.files</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for openwebui_client.files</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;OpenWebUI files class for handling file uploads.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai.resources.files</span><span class="w"> </span><span class="kn">import</span> <span class="n">Files</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai.types.file_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileObject</span>
+
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="OpenWebUIFiles">
+<a class="viewcode-back" href="../../api.html#openwebui_client.files.OpenWebUIFiles">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OpenWebUIFiles</span><span class="p">(</span><span class="n">Files</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extended Files class for OpenWebUI with improved file upload functionality.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="OpenWebUIFiles.from_paths">
+<a class="viewcode-back" href="../../api.html#openwebui_client.files.OpenWebUIFiles.from_paths">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_paths</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">files</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">FileObject</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">file_metadata</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span><span class="p">,</span> <span class="n">file_metadata</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="OpenWebUIFiles.from_path">
+<a class="viewcode-back" href="../../api.html#openwebui_client.files.OpenWebUIFiles.from_path">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_path</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="n">file_metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileObject</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">file</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">filestream</span><span class="p">:</span>
+            <span class="c1"># OpenWebUI requires a specific format for file uploads</span>
+            <span class="c1"># The key differences from standard OpenAI:</span>
+            <span class="c1"># 1. Using a trailing slash on the endpoint path</span>
+            <span class="c1"># 2. Adding a &#39;process=true&#39; parameter</span>
+            <span class="c1"># 3. Using the proper multipart/form-data format for the file</span>
+
+            <span class="c1"># Use direct HTTP request instead of the OpenAI client for file uploads</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+            <span class="c1"># Extract the base URL from the client (removing any trailing slash)</span>
+            <span class="n">base_url</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Construct the full URL with the required trailing slash</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_url</span><span class="si">}</span><span class="s2">/v1/files/&quot;</span>
+
+            <span class="c1"># Set up authentication headers</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">api_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+
+            <span class="c1"># Set up the multipart form data like the curl command</span>
+            <span class="c1"># Place both the file and process=true in the files parameter</span>
+            <span class="c1"># This matches how curl -F works</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="n">filestream</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;process&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">}</span>
+
+            <span class="c1"># Add any additional metadata provided by the user</span>
+            <span class="k">if</span> <span class="n">file_metadata</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">file_metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+            <span class="c1"># Print detailed request information</span>
+            <span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FILES API - URL: </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FILES API - Headers: </span><span class="si">{</span><span class="n">headers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FILES API - Data: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FILES API - Files: </span><span class="si">{</span><span class="n">files</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Make the HTTP request directly</span>
+            <span class="n">http_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Print response details</span>
+            <span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FILES API - Response Status: </span><span class="si">{</span><span class="n">http_response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;FILES API - Response Headers: </span><span class="si">{</span><span class="nb">dict</span><span class="p">(</span><span class="n">http_response</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;FILES API - Response Body: </span><span class="si">{</span><span class="n">http_response</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">500</span><span class="p">]</span><span class="si">}</span><span class="s2">...&quot;</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">http_response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">500</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;FILES API - Response Body: </span><span class="si">{</span><span class="n">http_response</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Raise an exception for any HTTP error</span>
+            <span class="n">http_response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+            <span class="c1"># Parse the JSON response</span>
+            <span class="n">response_data</span> <span class="o">=</span> <span class="n">http_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">response_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">response_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">))</span>
+
+            <span class="c1"># Convert the response to an OpenAI FileObject with required defaults</span>
+            <span class="n">file_object</span> <span class="o">=</span> <span class="n">FileObject</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="n">response_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;file-</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+                <span class="nb">bytes</span><span class="o">=</span><span class="n">response_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s2">&quot;bytes&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span>
+                <span class="p">),</span>  <span class="c1"># Default to file size</span>
+                <span class="n">created_at</span><span class="o">=</span><span class="n">response_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+                <span class="p">),</span>  <span class="c1"># Default to current time</span>
+                <span class="n">filename</span><span class="o">=</span><span class="n">response_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                <span class="nb">object</span><span class="o">=</span><span class="s2">&quot;file&quot;</span><span class="p">,</span>  <span class="c1"># Required fixed value</span>
+                <span class="n">purpose</span><span class="o">=</span><span class="n">response_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;purpose&quot;</span><span class="p">,</span> <span class="s2">&quot;assistants&quot;</span><span class="p">),</span>  <span class="c1"># Default purpose</span>
+                <span class="n">status</span><span class="o">=</span><span class="n">response_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="s2">&quot;processed&quot;</span><span class="p">),</span>  <span class="c1"># Default status</span>
+                <span class="n">status_details</span><span class="o">=</span><span class="n">response_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status_details&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">file_object</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Marc Durepos.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installation &mdash; openwebui-client 0.1.0 documentation</title>
+  <title>Installation &mdash; openwebui-client 0.2.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/documentation_options.js?v=37f418d5"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -84,10 +84,46 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api.html#client">Client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#chat-completions">Chat Completions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#files">Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#core-module">Core Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-openwebui_client.client">Client</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.html#openwebui_client.client.OpenWebUIChat"><code class="docutils literal notranslate"><span class="pre">OpenWebUIChat</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.html#openwebui_client.client.OpenWebUIChat.completions"><code class="docutils literal notranslate"><span class="pre">OpenWebUIChat.completions()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#openwebui_client.client.OpenWebUIClient"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.html#openwebui_client.client.OpenWebUIClient.__init__"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#openwebui_client.client.OpenWebUIClient.chat"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient.chat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#openwebui_client.client.OpenWebUIClient.files"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient.files()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#openwebui_client.client.OpenWebUIClient.chat_with_tools"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient.chat_with_tools()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#chat-completions">Chat Completions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.html#openwebui_client.completions.OpenWebUICompletions"><code class="docutils literal notranslate"><span class="pre">OpenWebUICompletions</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.html#openwebui_client.completions.OpenWebUICompletions.__init__"><code class="docutils literal notranslate"><span class="pre">OpenWebUICompletions.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#openwebui_client.completions.OpenWebUICompletions.create"><code class="docutils literal notranslate"><span class="pre">OpenWebUICompletions.create()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-openwebui_client.files">Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.html#openwebui_client.files.OpenWebUIFiles"><code class="docutils literal notranslate"><span class="pre">OpenWebUIFiles</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.html#openwebui_client.files.OpenWebUIFiles.from_paths"><code class="docutils literal notranslate"><span class="pre">OpenWebUIFiles.from_paths()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#openwebui_client.files.OpenWebUIFiles.from_path"><code class="docutils literal notranslate"><span class="pre">OpenWebUIFiles.from_path()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#core-module">Core Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.html#openwebui_client.OpenWebUIClient"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.html#openwebui_client.OpenWebUIClient.__init__"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#openwebui_client.OpenWebUIClient.chat"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient.chat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#openwebui_client.OpenWebUIClient.chat_with_tools"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient.chat_with_tools()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.html#openwebui_client.OpenWebUIClient.files"><code class="docutils literal notranslate"><span class="pre">OpenWebUIClient.files()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
