@@ -8,14 +8,12 @@ import os
 from importlib.metadata import PackageNotFoundError, version
 from typing import Optional
 
-from .tools import toolify
 from .client import OpenWebUIClient
 
 # Export key classes and functions
 __all__ = [
     "OpenWebUIClient",
     "client",
-    "toolify",
 ]
 
 try:

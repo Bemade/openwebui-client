@@ -1,33 +1,21 @@
 """OpenWebUI completions class for handling file parameters in chat completions."""
 
 import logging
+from typing import Collection, Dict, Iterable, List, Literal, Optional, Union
+
 import httpx
-from typing import (
-    Collection,
-    Dict,
-    Iterable,
-    List,
-    Literal,
-    Optional,
-    Union,
-)
-from openai.types.file_object import FileObject
-from openai._types import Body, Headers, NotGiven, Query, NOT_GIVEN
+from httpx import Timeout
+from openai import OpenAI
 from openai._streaming import Stream
+from openai._types import NOT_GIVEN, Body, Headers, NotGiven, Query
+from openai._utils import required_args
 from openai.resources.chat import Completions
-from openai.types.shared.chat_model import ChatModel
 from openai.types.chat import (
     ChatCompletion,
+    ChatCompletionChunk,
     ChatCompletionMessageParam,
     completion_create_params,
-    ChatCompletionChunk,
 )
-from openai.types.shared_params.metadata import Metadata
-from openai.types.shared.reasoning_effort import ReasoningEffort
-from openai.types.chat.chat_completion_tool_choice_option_param import (
-    ChatCompletionToolChoiceOptionParam,
-)
-from openai.types.chat.chat_completion_tool_param import ChatCompletionToolParam
 from openai.types.chat.chat_completion_audio_param import ChatCompletionAudioParam
 from openai.types.chat.chat_completion_prediction_content_param import (
     ChatCompletionPredictionContentParam,
@@ -35,7 +23,14 @@ from openai.types.chat.chat_completion_prediction_content_param import (
 from openai.types.chat.chat_completion_stream_options_param import (
     ChatCompletionStreamOptionsParam,
 )
-from openai._utils import required_args
+from openai.types.chat.chat_completion_tool_choice_option_param import (
+    ChatCompletionToolChoiceOptionParam,
+)
+from openai.types.chat.chat_completion_tool_param import ChatCompletionToolParam
+from openai.types.file_object import FileObject
+from openai.types.shared.chat_model import ChatModel
+from openai.types.shared.reasoning_effort import ReasoningEffort
+from openai.types.shared_params.metadata import Metadata
 
 _logger = logging.getLogger(__name__)
 
@@ -43,7 +38,7 @@ _logger = logging.getLogger(__name__)
 class OpenWebUICompletions(Completions):
     """Extended Completions class that supports the 'files' parameter for OpenWebUI."""
 
-    def __init__(self, client):
+    def __init__(self, client: OpenAI) -> None:
         """Initialize the OpenWebUI completions handler.
 
         Args:
@@ -170,7 +165,7 @@ class OpenWebUICompletions(Completions):
 
             # Make the request using direct HTTP request
             # OpenWebUI requires files as a parameter in the form data
-            import json
+
             import requests
 
             # Extract the base URL from the client
@@ -209,7 +204,7 @@ class OpenWebUICompletions(Completions):
             if files:
                 # Based on error messages, let's try a different format
                 # Check OpenWebUI's API source to see expected format
-                file_ids = [f.id for f in files]
+                [f.id for f in files]
 
                 # Format files exactly as shown in OpenWebUI's API docs
                 formatted_files = [{"type": "file", "id": f.id} for f in files]
@@ -227,9 +222,21 @@ class OpenWebUICompletions(Completions):
             _logger.debug(f"CHAT API - URL: {url}")
             _logger.debug(f"CHAT API - Headers: {headers}")
             _logger.debug(f"CHAT API - Payload: {payload}")
+            float_timeout: float
+            if timeout is not NOT_GIVEN and timeout is not None:
+                if isinstance(timeout, Timeout):
+                    float_timeout = (timeout.connect or 0) + (timeout.read or 0) or 60
+                    if float_timeout == 0:
+                        float_timeout = 60.0
+                else:
+                    float_timeout = float(timeout or 60.0)
+            else:
+                float_timeout = 60.0
 
             # Make the HTTP request with JSON payload
-            http_response = requests.post(url, headers=headers, json=payload)
+            http_response = requests.post(
+                url, headers=headers, json=payload, timeout=float_timeout
+            )
 
             # Print response details
             _logger.debug(f"CHAT API - Response Status: {http_response.status_code}")

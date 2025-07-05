@@ -40,6 +40,7 @@ dev = [
     "black>=23.0.0",
     "isort>=5.0.0",
     "mypy>=1.0.0",
+    "ruff>=0.0.47",
     "flake8>=6.0.0",
     "flake8-bugbear>=24.0.0",
     "pre-commit>=3.0.0",
@@ -140,34 +141,22 @@ ignore_missing_imports = true
 line-length = 88
 target-version = "py38"
 
-[tool.ruff.lint]
 # Enable common rules
-select = [
-    "E",   # pycodestyle errors
-    "F",   # pyflakes
-    "I",   # isort
-    "B",   # flake8-bugbear
-    "UP",  # pyupgrade
-    "N",   # pep8-naming
-    "RUF", # ruff-specific rules
-]
+select = ["E", "F", "I", "B", "UP", "N", "RUF"]  # pycodestyle, pyflakes, isort, bugbear, pyupgrade, pep8-naming, ruff-specific
 
 # Ignore rules that conflict with Black or are too strict
-ignore = [
-    "E203",  # Whitespace before ':' (handled by Black)
-    "E501",  # Line too long (handled by line-length)
-]
+ignore = ["E501"]  # E202: Whitespace before ':', E501: Line too long
 
 # Per-file ignores
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401", "D104"]  # Imported but unused, Missing docstring in public package
-"tests/*.py" = ["S101", "S603", "S607", "D", "PLR2004"]  # Test-specific ignores
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401", "D104"]
+"tests/*.py" = ["S101", "S603", "S607", "D", "PLR2004"]
 
-[tool.ruff.lint.isort]
+[tool.ruff.isort]
 known-first-party = ["openwebui_client"]
 combine-as-imports = true
 
-[tool.ruff.lint.flake8-quotes]
+[tool.ruff.flake8-quotes]
 docstring-quotes = "double"
 
 [tool.pytest.ini_options]
@@ -178,3 +167,7 @@ filterwarnings = [
     "error",
     "ignore:.*U.*mode is deprecated:DeprecationWarning",
 ]
+
+[tool.bandit]
+# B101: Test for use of assert
+skips = ["B101"]

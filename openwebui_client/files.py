@@ -1,13 +1,12 @@
 """OpenWebUI files class for handling file uploads."""
 
 import logging
-from typing import Dict, Any, Tuple, Optional, Iterable, List, overload, Union, override
 import time
-
-from openai.types.file_object import FileObject
-from openai.resources.files import Files
-
 from pathlib import Path
+from typing import Any, Dict, Iterable, List, Optional, Tuple
+
+from openai.resources.files import Files
+from openai.types.file_object import FileObject
 
 _logger = logging.getLogger(__name__)
 
@@ -56,7 +55,7 @@ class OpenWebUIFiles(Files):
             # Add any additional metadata provided by the user
             if file_metadata:
                 for key, value in file_metadata.items():
-                    files[key] = (None, str(value))
+                    data[key] = str(value)
 
             # Print detailed request information
             _logger.debug(f"FILES API - URL: {url}")
@@ -65,7 +64,9 @@ class OpenWebUIFiles(Files):
             _logger.debug(f"FILES API - Files: {files.keys()}")
 
             # Make the HTTP request directly
-            http_response = requests.post(url, headers=headers, files=files, data=data)
+            http_response = requests.post(
+                url, headers=headers, files=files, data=data, timeout=60
+            )
 
             # Print response details
             _logger.debug(f"FILES API - Response Status: {http_response.status_code}")

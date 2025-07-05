@@ -34,7 +34,75 @@ response = client.chat.completions.create(
     ]
 )
 print(response.choices[0].message.content)
+```
 
+## Using Function Calling / Tools
+
+The client supports OpenAI-compatible function calling with tools:
+
+```python
+# Direct tool usage with chat completions
+response = client.chat.completions.create(
+    model="your_model",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "What is the current time?"}
+    ],
+    tools=[
+        {
+            "type": "function",
+            "function": {
+                "name": "get_current_time",
+                "description": "Get the current time.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": [],
+                },
+            },
+        }
+    ],
+)
+
+# Check if the model used tools
+if response.choices[0].message.tool_calls:
+    tool_call = response.choices[0].message.tool_calls[0]
+    print(f"Tool called: {tool_call.function.name}")
+```
+
+### Using the Tool Registry
+
+The client includes a tool registry for easier management of tools:
+
+```python
+# Define tool functions
+def get_weather(location: str, unit: str = "celsius") -> str:
+    """Get the current weather in a given location.
+
+    Args:
+        location: The location to get weather for
+        unit: The temperature unit to use (celsius or fahrenheit)
+
+    Returns:
+        str: A string describing the current weather
+    """
+    return f"The weather in {location} is sunny and 25°{unit[0]}"
+
+# Register tools with the client
+client.tool_registry.register(get_weather)
+
+# Use chat_with_tools for automatic tool handling
+response = client.chat_with_tools(
+    messages=[{"role": "user", "content": "What's the weather like in Toronto?"}],
+    max_tool_calls=5,
+)
+
+print(response)  # Will contain the final response after any tool calls
+```
+
+## File Operations
+
+```python
 # Upload a file to OpenWebUI
 uploaded_file = client.files.from_path(file)
 

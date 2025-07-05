@@ -1,29 +1,32 @@
 """OpenWebUI client for interacting with the OpenWebUI API."""
 
+import json
 import logging
-from typing import Any, Dict, List, Optional
+from pathlib import Path
+from typing import Any, Dict, Iterable, List, Optional, Sequence
 
 from openai import OpenAI
-from openai._streaming import Stream
-from openai.types.chat.chat_completion import ChatCompletion
-from openai.types.chat.chat_completion_chunk import ChatCompletionChunk
-from openai.types.chat.completion_create_params import ResponseFormat
-from openai.resources.chat import Chat as OpenAIChat
 from openai._compat import cached_property
-
-from httpx import Response
+from openai.resources.chat import Chat as OpenAIChat
+from openai.types.chat.chat_completion import ChatCompletion
+from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
+from openai.types.chat.chat_completion_tool_message_param import (
+    ChatCompletionToolMessageParam,
+)
 
 from .completions import OpenWebUICompletions
 from .files import OpenWebUIFiles
+from .tools import ToolsRegistry
 
 _logger = logging.getLogger(__name__)
+_logger.setLevel(logging.DEBUG)
 
 
 class OpenWebUIChat(OpenAIChat):
     """Custom Chat class that uses OpenWebUICompletions."""
 
     @cached_property
-    def completions(self):
+    def completions(self) -> OpenWebUICompletions:
         return OpenWebUICompletions(self._client)
 
 
@@ -60,66 +63,175 @@ class OpenWebUIClient(OpenAI):
         # Store additional configuration
         self.default_model = default_model
         self.base_url = base_url
+        self.tool_registry = ToolsRegistry()
 
     @cached_property
-    def chat(self):
+    def chat(self) -> OpenWebUIChat:
         """Return the custom OpenWebUIChat instance."""
         return OpenWebUIChat(self)
 
     @cached_property
-    def files(self):
+    def files(self) -> OpenWebUIFiles:
         return OpenWebUIFiles(self)
 
-    def chat_completion_with_files(
+    def chat_with_tools(
         self,
-        messages: List[Dict[str, Any]],
+        messages: List[ChatCompletionMessageParam],
+        tools: Optional[Sequence[str]] = None,
+        tool_params: Optional[Dict[str, Dict[str, Any]]] = None,
         model: Optional[str] = None,
-        files: Optional[List[bytes]] = None,
-        temperature: Optional[float] = None,
-        response_format: Optional[ResponseFormat] = None,
-        **kwargs: Any,
-    ) -> ChatCompletion | Stream[ChatCompletionChunk] | Response:
-        """Create a chat completion with optional file attachments.
+        max_tool_calls: int = 5,
+        files: Iterable[Path] = [],
+    ) -> str:
+        """Send a chat completion request and handle tool calls automatically.
+
+        This will automatically execute tool calls and include their results
+        in subsequent API calls until the model returns a final response.
 
         Args:
-            messages: The messages to send to the API
-            model: The model to use (defaults to self.default_model)
-            files: Optional list of file bytes to attach to the request
-            temperature: Optional temperature parameter
-            response_format: Optional response format
-            **kwargs: Additional arguments to pass to the API
+            messages: List of message dictionaries with 'role' and 'content' keys
+            tools: List of tool names to use (None for all registered tools)
+            tool_params: Optional parameters to pass to the tools when they are called
+            model: Model to use (defaults to the client's default model)
+            max_tool_calls: Maximum number of tool call rounds to allow
+            files: Optional list of Path objects to files that should be included with the request
 
         Returns:
-            The chat completion response
+            The final assistant message content (str) after all tool calls are processed
+
+        Raises:
+            RuntimeError: If the maximum number of tool calls is exceeded
+
+        Example:
+            >>> client = OpenWebUIClient()
+            >>> client.tool_registry.register(get_weather)
+            >>> response = client.chat_with_tools(
+            ...     messages=[{"role": "user", "content": "What's the weather in Paris?"}],
+            ...     max_tool_calls=3
+            ... )
+            >>> print(response)
         """
-        # Use default model if not specified
-        if model is None:
-            model = self.default_model
+        # Initialize tool_params if not provided
+        if tool_params is None:
+            tool_params = {}
 
-        # Build request parameters
-        params = {"model": model, "messages": messages, **kwargs}
+        conversation: List[ChatCompletionMessageParam] = messages.copy()
+        file_refs = self.files.from_paths([(file, None) for file in files])
 
-        if temperature is not None:
-            params["temperature"] = temperature
+        # Conversation is now a list that we can mutate
+        tool_call_count = 0
 
-        if response_format is not None:
-            params["response_format"] = response_format
+        # Get tools from the registry
+        all_tools = self.tool_registry.get_openai_tools()
 
-        # Handle file uploads if provided
-        if files:
-            # Make request with file attachments
-            file_data = [("files", file) for file in files]
-
-            # OpenWebUI uses a different endpoint format
-            endpoint = "/api/openai/chat/completions"
-
-            # Send as multipart/form-data
-            headers = {"Content-Type": "multipart/form-data"}
-            response = self._client.post(
-                endpoint, json=params, files=file_data, headers=headers
-            )
+        # Filter tools if specific ones were requested
+        if tools:
+            tool_schemas = [
+                tool
+                for tool in all_tools
+                if tool.get("function", {}).get("name") in tools
+            ]
         else:
-            # Use standard completions endpoint
-            response = self.chat.completions.create(**params)
+            # Use all registered tools
+            tool_schemas = all_tools
 
-        return response
+        _logger.debug("Starting chat with tools")
+        _logger.debug(
+            f"Available tools: {[t['function']['name'] for t in tool_schemas] if tool_schemas else 'None'}"
+        )
+        _logger.debug(f"Initial messages: {conversation}")
+
+        while tool_call_count < max_tool_calls:
+            # Get the next response from the model
+            _logger.debug(
+                f"Sending request to model (attempt {tool_call_count + 1}/{max_tool_calls})"
+            )
+            _logger.debug(f"Messages: {conversation}")
+            _logger.debug(f"Using model: {model or self.default_model}")
+            _logger.debug(
+                f"Tools: {json.dumps(tool_schemas, indent=4)} if tool_schemas else 'None'"
+            )
+
+            # Debug log the tool dictionaries
+            _logger.debug(f"Tool dictionaries: {json.dumps(tool_schemas, indent=2)}")
+            # Also log the original tool schemas for comparison
+
+            args = {
+                "messages": conversation,
+                "model": model or self.default_model,
+                "tools": tool_schemas,
+                "tool_choice": "auto",
+                "files": file_refs,
+            }
+            _logger.debug(f"Args: {args}")
+            response = self.chat.completions.create(**args)
+
+            _logger.debug(f"Received response: {response}")
+
+            # Not running in stream mode, this should never fail. Here for type safety.
+            assert isinstance(response, ChatCompletion)
+            message = response.choices[0].message
+
+            # If there are no tool calls, we're done
+            if not hasattr(message, "tool_calls") or not message.tool_calls:
+                _logger.debug("No tool calls in response, ending conversation")
+                return message.content or ""
+            response = self.chat.completions.create(**args)
+
+            _logger.debug(f"Received response: {response}")
+
+            # Not running in stream mode, this should never fail. Here for type safety.
+            assert isinstance(response, ChatCompletion)
+            message = response.choices[0].message
+
+            # If there are no tool calls, we're done
+            if not hasattr(message, "tool_calls") or not message.tool_calls:
+                _logger.debug("No tool calls in response, ending conversation")
+                return message.content or ""
+
+            # Process tool calls
+            tool_call_count += 1
+            _logger.debug(f"Processing tool call {tool_call_count}/{max_tool_calls}")
+
+            for tool_call in message.tool_calls:
+                function = tool_call.function
+                non_ai_params = tool_params.get(function.name, {})
+                _logger.debug(f"Calling tool: {function.name}")
+                _logger.debug(f"Arguments: {function.arguments}")
+                if non_ai_params:
+                    _logger.debug(f"Non-AI parameters: {non_ai_params}")
+
+                # Execute the tool
+                try:
+                    _logger.debug(
+                        f"Calling tool: {function.name} with args: {function.arguments}"
+                    )
+                    result = self.tool_registry.call_tool(
+                        function.name,
+                        json.loads(function.arguments),
+                        non_ai_params=non_ai_params,
+                    )
+                    result_str = (
+                        json.dumps(result) if not isinstance(result, str) else result
+                    )
+                    _logger.debug(
+                        f"Tool {function.name} returned: {result_str[:200]}..."
+                        if len(str(result_str)) > 200
+                        else f"Tool {function.name} returned: {result_str}"
+                    )
+                except Exception as e:
+                    result_str = f"Error: {e!s}"
+                    _logger.error(
+                        f"Error calling tool {function.name}: {e}", exc_info=True
+                    )
+
+                # Add the tool response to the conversation
+                conversation.append(
+                    ChatCompletionToolMessageParam(
+                        tool_call_id=tool_call.id,
+                        role="tool",
+                        content=result_str,
+                    )
+                )
+
+        raise RuntimeError(f"Maximum number of tool calls ({max_tool_calls}) exceeded")

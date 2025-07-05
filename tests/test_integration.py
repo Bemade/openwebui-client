@@ -4,14 +4,14 @@ These tests require a running OpenWebUI server and valid API credentials.
 Set the OPENWEBUI_API_KEY and OPENWEBUI_API_BASE environment variables before running.
 """
 
-import os
-import pytest
-from openwebui_client import OpenWebUIClient
-
-from pathlib import Path
 import logging
+import os
+from pathlib import Path
 
+import pytest
 from openai.types.chat.chat_completion import ChatCompletion
+
+from openwebui_client import OpenWebUIClient
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -21,7 +21,7 @@ pytestmark = pytest.mark.skipif(
     reason="OPENWEBUI_API_KEY and OPENWEBUI_API_BASE environment variables are required for integration tests",
 )
 
-model = os.getenv("OPENWEBUI_DEFAULT_MODEL") or "anthropic.claude-3-7-sonnet-latest"
+model = os.getenv("OPENWEBUI_DEFAULT_MODEL") or "MS.qwen3:32b-q8_0"
 
 
 @pytest.fixture
@@ -56,7 +56,39 @@ def test_chat_completion(client):
     assert response.choices[0].message.role == "assistant"
 
 
-def test_chat_completion_with_file(client: OpenWebUIClient, file_path: Path):
+def test_completion_with_tools(client: OpenWebUIClient) -> None:
+    response = client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": "What is the current time?"},
+        ],
+        tools=[
+            {
+                "type": "function",
+                "function": {
+                    "name": "get_current_time",
+                    "description": "Get the current time.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {},
+                        "required": [],
+                    },
+                },
+            }
+        ],
+    )
+
+    assert isinstance(response, ChatCompletion)
+    assert response.id is not None
+    assert len(response.choices) > 0
+    assert response.choices[0].message.content is not None
+    assert response.choices[0].message.role == "assistant"
+    assert response.choices[0].message.tool_calls is not None
+    assert response.choices[0].message.tool_calls[0].function.name == "get_current_time"
+
+
+def test_chat_completion_with_file(client: OpenWebUIClient, file_path: Path) -> None:
     """Test chat completions with a file attachment."""
     file = client.files.from_path(file=file_path)
 
@@ -86,7 +118,7 @@ def test_chat_completion_with_file(client: OpenWebUIClient, file_path: Path):
     )
 
 
-def test_file_upload(client: OpenWebUIClient, file_path: Path):
+def test_file_upload(client: OpenWebUIClient, file_path: Path) -> None:
     """Test file uploads."""
     try:
         file_obj = client.files.from_path(
@@ -102,7 +134,7 @@ def test_file_upload(client: OpenWebUIClient, file_path: Path):
         pytest.xfail(f"File upload failed: {str(e)}")
 
 
-def test_multiple_file_upload(client: OpenWebUIClient, file_path: Path):
+def test_multiple_file_upload(client: OpenWebUIClient, file_path: Path) -> None:
     """Test multiple file uploads."""
     # Create small test files
 
