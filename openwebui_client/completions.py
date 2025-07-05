@@ -53,51 +53,59 @@ class OpenWebUICompletions(Completions):
         *,
         messages: Iterable[ChatCompletionMessageParam],
         model: Union[str, ChatModel],
-        audio: Optional[ChatCompletionAudioParam] | NotGiven = NOT_GIVEN,
-        files: Optional[Collection[FileObject]] | NotGiven = NOT_GIVEN,
-        frequency_penalty: Optional[float] | NotGiven = NOT_GIVEN,
-        function_call: completion_create_params.FunctionCall | NotGiven = NOT_GIVEN,
-        functions: Iterable[completion_create_params.Function] | NotGiven = NOT_GIVEN,
-        logit_bias: Optional[Dict[str, int]] | NotGiven = NOT_GIVEN,
-        logprobs: Optional[bool] | NotGiven = NOT_GIVEN,
-        max_completion_tokens: Optional[int] | NotGiven = NOT_GIVEN,
-        max_tokens: Optional[int] | NotGiven = NOT_GIVEN,
-        metadata: Optional[Metadata] | NotGiven = NOT_GIVEN,
-        modalities: Optional[List[Literal["text", "audio"]]] | NotGiven = NOT_GIVEN,
-        n: Optional[int] | NotGiven = NOT_GIVEN,
-        parallel_tool_calls: bool | NotGiven = NOT_GIVEN,
-        prediction: (
-            Optional[ChatCompletionPredictionContentParam] | NotGiven
-        ) = NOT_GIVEN,
-        presence_penalty: Optional[float] | NotGiven = NOT_GIVEN,
-        reasoning_effort: Optional[ReasoningEffort] | NotGiven = NOT_GIVEN,
-        response_format: completion_create_params.ResponseFormat | NotGiven = NOT_GIVEN,
-        seed: Optional[int] | NotGiven = NOT_GIVEN,
-        service_tier: (
-            Optional[Literal["auto", "default", "flex"]] | NotGiven
-        ) = NOT_GIVEN,
-        stop: Union[Optional[str], List[str], None] | NotGiven = NOT_GIVEN,
-        store: Optional[bool] | NotGiven = NOT_GIVEN,
-        stream: Optional[Literal[False]] | Literal[True] | NotGiven = NOT_GIVEN,
-        stream_options: (
-            Optional[ChatCompletionStreamOptionsParam] | NotGiven
-        ) = NOT_GIVEN,
-        temperature: Optional[float] | NotGiven = NOT_GIVEN,
-        tool_choice: ChatCompletionToolChoiceOptionParam | NotGiven = NOT_GIVEN,
-        tools: Iterable[ChatCompletionToolParam] | NotGiven = NOT_GIVEN,
-        top_logprobs: Optional[int] | NotGiven = NOT_GIVEN,
-        top_p: Optional[float] | NotGiven = NOT_GIVEN,
-        user: str | NotGiven = NOT_GIVEN,
-        web_search_options: (
-            completion_create_params.WebSearchOptions | NotGiven
-        ) = NOT_GIVEN,
+        audio: Union[Optional[ChatCompletionAudioParam], NotGiven] = NOT_GIVEN,
+        files: Union[Optional[Collection[FileObject]], NotGiven] = NOT_GIVEN,
+        frequency_penalty: Union[Optional[float], NotGiven] = NOT_GIVEN,
+        function_call: Union[
+            completion_create_params.FunctionCall, NotGiven
+        ] = NOT_GIVEN,
+        functions: Union[
+            Iterable[completion_create_params.Function], NotGiven
+        ] = NOT_GIVEN,
+        logit_bias: Union[Optional[Dict[str, int]], NotGiven] = NOT_GIVEN,
+        logprobs: Union[Optional[bool], NotGiven] = NOT_GIVEN,
+        max_completion_tokens: Union[Optional[int], NotGiven] = NOT_GIVEN,
+        max_tokens: Union[Optional[int], NotGiven] = NOT_GIVEN,
+        metadata: Union[Optional[Metadata], NotGiven] = NOT_GIVEN,
+        modalities: Union[
+            Optional[List[Literal["text", "audio"]]], NotGiven
+        ] = NOT_GIVEN,
+        n: Union[Optional[int], NotGiven] = NOT_GIVEN,
+        parallel_tool_calls: Union[bool, NotGiven] = NOT_GIVEN,
+        prediction: Union[
+            Optional[ChatCompletionPredictionContentParam], NotGiven
+        ] = NOT_GIVEN,
+        presence_penalty: Union[Optional[float], NotGiven] = NOT_GIVEN,
+        reasoning_effort: Union[Optional[ReasoningEffort], NotGiven] = NOT_GIVEN,
+        response_format: Union[
+            completion_create_params.ResponseFormat, NotGiven
+        ] = NOT_GIVEN,
+        seed: Union[Optional[int], NotGiven] = NOT_GIVEN,
+        service_tier: Union[
+            Optional[Literal["auto", "default", "flex"]], NotGiven
+        ] = NOT_GIVEN,
+        stop: Union[Optional[str], List[str], None, NotGiven] = NOT_GIVEN,
+        store: Union[Optional[bool], NotGiven] = NOT_GIVEN,
+        stream: Union[Optional[Literal[False]], Literal[True], NotGiven] = NOT_GIVEN,
+        stream_options: Union[
+            Optional[ChatCompletionStreamOptionsParam], NotGiven
+        ] = NOT_GIVEN,
+        temperature: Union[Optional[float], NotGiven] = NOT_GIVEN,
+        tool_choice: Union[ChatCompletionToolChoiceOptionParam, NotGiven] = NOT_GIVEN,
+        tools: Union[Iterable[ChatCompletionToolParam], NotGiven] = NOT_GIVEN,
+        top_logprobs: Union[Optional[int], NotGiven] = NOT_GIVEN,
+        top_p: Union[Optional[float], NotGiven] = NOT_GIVEN,
+        user: Union[str, NotGiven] = NOT_GIVEN,
+        web_search_options: Union[
+            completion_create_params.WebSearchOptions, NotGiven
+        ] = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
-        extra_headers: Headers | None = None,
-        extra_query: Query | None = None,
-        extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> ChatCompletion | Stream[ChatCompletionChunk]:
+        extra_headers: Union[Headers, None] = None,
+        extra_query: Union[Query, None] = None,
+        extra_body: Union[Body, None] = None,
+        timeout: Union[float, httpx.Timeout, None, NotGiven] = NOT_GIVEN,
+    ) -> Union[ChatCompletion, Stream[ChatCompletionChunk]]:
         """Create a chat completion with support for the 'files' parameter.
 
         This overrides the standard create method to handle the 'files' parameter
