@@ -42,7 +42,7 @@ class OpenWebUIClient(OpenAI):
         self,
         api_key: Optional[str] = None,
         base_url: str = "http://localhost:5000",
-        default_model: str = "gpt-4",
+        default_model: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize the OpenWebUI client.
