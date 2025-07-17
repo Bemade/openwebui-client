@@ -2,38 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://bemade.github.io/openwebui-client/</loc>
-         <lastmod>2025-07-05</lastmod>
+         <lastmod>2025-07-17</lastmod>
     </url>
     <url>
          <loc>https://bemade.github.io/openwebui-client/changelog/</loc>
-         <lastmod>2025-07-05</lastmod>
+         <lastmod>2025-07-17</lastmod>
     </url>
     <url>
          <loc>https://bemade.github.io/openwebui-client/contributing/</loc>
-         <lastmod>2025-07-05</lastmod>
+         <lastmod>2025-07-17</lastmod>
     </url>
     <url>
          <loc>https://bemade.github.io/openwebui-client/examples/</loc>
-         <lastmod>2025-07-05</lastmod>
+         <lastmod>2025-07-17</lastmod>
     </url>
     <url>
          <loc>https://bemade.github.io/openwebui-client/installation/</loc>
-         <lastmod>2025-07-05</lastmod>
+         <lastmod>2025-07-17</lastmod>
     </url>
     <url>
          <loc>https://bemade.github.io/openwebui-client/usage/</loc>
-         <lastmod>2025-07-05</lastmod>
+         <lastmod>2025-07-17</lastmod>
     </url>
     <url>
          <loc>https://bemade.github.io/openwebui-client/api/client/</loc>
-         <lastmod>2025-07-05</lastmod>
+         <lastmod>2025-07-17</lastmod>
     </url>
     <url>
          <loc>https://bemade.github.io/openwebui-client/api/completions/</loc>
-         <lastmod>2025-07-05</lastmod>
+         <lastmod>2025-07-17</lastmod>
     </url>
     <url>
          <loc>https://bemade.github.io/openwebui-client/api/files/</loc>
-         <lastmod>2025-07-05</lastmod>
+         <lastmod>2025-07-17</lastmod>
+    </url>
+    <url>
+         <loc>https://bemade.github.io/openwebui-client/api/models/</loc>
+         <lastmod>2025-07-17</lastmod>
     </url>
 </urlset>
