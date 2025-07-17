@@ -16,6 +16,7 @@ from openai.types.chat.chat_completion_tool_message_param import (
 
 from .completions import OpenWebUICompletions
 from .files import OpenWebUIFiles
+from .models import OpenWebUIModels
 from .tools import ToolsRegistry
 
 _logger = logging.getLogger(__name__)
@@ -73,6 +74,11 @@ class OpenWebUIClient(OpenAI):
     @cached_property
     def files(self) -> OpenWebUIFiles:
         return OpenWebUIFiles(self)
+
+    @cached_property
+    def models(self) -> OpenWebUIModels:
+        """Return the custom OpenWebUIModels instance."""
+        return OpenWebUIModels(self)
 
     def chat_with_tools(
         self,

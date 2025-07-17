@@ -45,6 +45,31 @@ response = client.chat.completions.create(
 )
 ```
 
+## Listing Available Models
+
+```python
+from openwebui_client import OpenWebUIClient
+
+client = OpenWebUIClient(
+    api_key="your-openwebui-api-key",
+    base_url="http://localhost:5000"
+)
+
+# List all available models
+models = client.models.list()
+
+# Print model information
+print(f"Found {len(models)} models:")
+for model in models:
+    print(f"ID: {model.id}, Name: {model.name or model.id}, Owner: {model.owned_by}")
+
+# Find models with specific characteristics
+local_models = [m for m in models if "local" in m.id.lower() or (m.name and "local" in m.name.lower())]
+print(f"\nFound {len(local_models)} local models:")
+for model in local_models:
+    print(f"ID: {model.id}, Name: {model.name or model.id}")
+```
+
 ## Using Function Calling / Tools
 
 ### Direct Tool Usage

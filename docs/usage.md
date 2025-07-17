@@ -57,6 +57,38 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
+## Models
+
+### List Available Models
+
+Retrieve a list of all available models in your OpenWebUI instance:
+
+```python
+# Get all available models
+models = client.models.list()
+
+# Print model information
+for model in models:
+    print(f"ID: {model.id}, Name: {model.name or model.id}")
+```
+
+### Access Model Properties
+
+Each model has several properties you can access:
+
+```python
+# Get the first model
+model = client.models.list()[0]
+
+# Access model properties
+print(f"Model ID: {model.id}")
+print(f"Model Name: {model.name}")
+print(f"Created: {model.created}")
+print(f"Owner: {model.owned_by}")
+```
+
+See the [Models API documentation](api/models.md) for more details.
+
 ## File Management
 
 ### Upload a Single File
