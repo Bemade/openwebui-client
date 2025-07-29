@@ -231,12 +231,13 @@ class OpenWebUIClient(OpenAI):
                         f"Error calling tool {function.name}: {e}", exc_info=True
                     )
 
-                # Add the tool response to the conversation
+                # Add the tool response to the conversation as a user message with context
+                tool_context = f"Tool '{function.name}' result: "
                 conversation.append(
                     ChatCompletionToolMessageParam(
                         tool_call_id=tool_call.id,
-                        role="tool",
-                        content=result_str,
+                        role="user",  # Changed from 'tool' to 'user'
+                        content=tool_context + result_str
                     )
                 )
 
